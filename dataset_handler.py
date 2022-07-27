@@ -1,18 +1,36 @@
-import pandas as pd
 import json
+import pandas as pd
 
 
 class DatasetHandler:
+    """
+    Transforms Tweet csv file to JSON file.
+    """
 
     def __init__(self):
+        """
+        Constructor.
+        """
+
         self.csv_data = None
         self.json_data = {}
 
-    def get_csv(self, csv_file, separator):
+    def get_csv(self, csv_file: str, separator: str):
+        """
+        Reads csv file.
+
+        :param csv_file: Path to csv file
+        :param separator: Seperator for csv file
+        """
+
         with open(csv_file, 'r', encoding='utf-8'):
             self.csv_data = pd.read_csv(csv_file, sep=separator)
 
     def create_json(self):
+        """
+        Creates JSON dict from dataframe.
+        """
+
         for index, row in self.csv_data.iterrows():
             data = {'Id': row['tweet.id'], 'Created_At': row['tweet.created_at'], 'Text': row['tweet.text'],
                     'Tweet_Source': row['tweet.source'], 'Retweet_Count': row['tweet.retweet_count'],
@@ -29,11 +47,25 @@ class DatasetHandler:
 
             self.json_data[row['tweet.id']] = {'Data': data, 'User': user, 'Geo': geo, 'Hashtags': hashtags}
 
-    def save_json(self, name):
+    def save_json(self, name: str):
+        """
+        Saves dict as JSON object.
+
+        :param name: File name
+        """
+
         with open(name + '.json', 'w', encoding='utf-8') as out_file:
             json.dump(self.json_data, out_file, indent=4)
 
-    def append_json(self, file1, file2):
+    def append_json(self, file1: str, file2: str, file_name: str):
+        """
+        Merges tow JSON files.
+
+        :param file1: JSON file 1
+        :param file2: JSON file 2
+        :param file_name: File name for new file
+        """
+
         with open(file1, 'r', encoding='utf-8') as in_file1:
             json1 = json.load(in_file1)
 
@@ -46,6 +78,12 @@ class DatasetHandler:
 
     @staticmethod
     def remove_none(json_file):
+        """
+        Replaces the "None" with None in JSON dict.
+
+        :param json_file: Path to Geo Tweet data
+        """
+
         with open(json_file, 'r', encoding='utf-8') as in_file:
             json_data = json.load(in_file)
 
@@ -56,36 +94,3 @@ class DatasetHandler:
 
         with open(json_file, 'w', encoding='utf-8') as out_file:
             json.dump(json_data, out_file, indent=4, ensure_ascii=False)
-
-
-def main():
-    csv_1 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/15.06.2022/tweets_15-06-2022_21-48-general.csv"
-    csv_2 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/15.06.2022/tweets_15-06-2022_22-03-nine2.csv"
-    csv_3 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/22.06.2022/tweets_22-06-2022_17-16_general.csv"
-    csv_4 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/22.06.2022/tweets_22-06-2022_17-08_nine.csv"
-    csv_5 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/29.06.2022/tweets_29-06-2022_16-28_general.csv"
-    csv_6 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/29.06.2022/tweets_29-06-2022_16-22_nine.csv"
-    csv_7 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/06.07.2022/tweets_06-07-2022_15-16_general.csv"
-    csv_8 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/06.07.2022/tweets_06-07-2022_15-07_nine.csv"
-
-    json_1 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/tweets_15-06-2022_general.json"
-    json_2 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/tweets_22-06-2022_general.json"
-    json_3 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/tweets_29-06-2022_general.json"
-    json_4 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/tweets_06-07-2022_general.json"
-    json_5 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/tweets_21-07-2022_16-05_general.json"
-    json_6 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/tweets_15-06-2022_nine.json"
-    json_7 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/tweets_22-06-2022_nine.json"
-    json_8 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/tweets_29-06-2022_nine.json"
-    json_9 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/tweets_06-07-2022_nine.json"
-    json_10 = "/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/tweets_21-07-2022_16-08_nine.json"
-
-    new_handler = DatasetHandler()
-    # new_handler.get_csv(csv_8, '$')
-    # new_handler.create_json()
-    # new_handler.save_json("tweets_06-07-2022_nine")
-    # new_handler.append_json(json_1, json_2)
-    new_handler.remove_none("/home/ubuntu/Projects/DeutscheBahnDataChallanges/Data/Nine/tweets_15-06_21-07_nine.json")
-
-
-if __name__ == '__main__':
-    main()
